@@ -62,6 +62,13 @@ export default function RootLayout() {
         />
 
         <Stack.Screen
+          name="page2"
+          options={{
+            title: t('studentDetail'),
+          }}
+        />
+
+        <Stack.Screen
           name="student/[id]"
           options={{
             title: t('studentDetail'),
