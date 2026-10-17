@@ -1,18 +1,42 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useColorScheme } from 'react-native';
+import { Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 
-import { AnimatedSplashOverlay } from '@/components/animated-icon';
-import AppTabs from '@/components/app-tabs';
-
-SplashScreen.preventAutoHideAsync();
-
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+export default function RootLayout() {
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <AnimatedSplashOverlay />
-      <AppTabs />
-    </ThemeProvider>
+    <>
+      <StatusBar style="dark" />
+
+      <Stack
+        screenOptions={{
+          // Màu thanh điều hướng
+          headerStyle: {
+            backgroundColor: "#ffffff",
+          },
+
+          // Màu nút Back và tiêu đề
+          headerTintColor: "#1641a3",
+
+          // Màu nền màn hình
+          contentStyle: {
+            backgroundColor: "#f5f7fb",
+          },
+
+          // Kiểu chữ tiêu đề
+          headerTitleStyle: {
+            fontWeight: "600",
+          },
+
+          // Chỉ hiện mũi tên Back, ẩn tên màn trước
+          headerBackButtonDisplayMode: "minimal",
+        }}
+      >
+        <Stack.Screen
+          name="index"
+          options={{
+            title: "Quản lý khóa học",
+          }}
+        />
+      </Stack>
+    </>
   );
 }
