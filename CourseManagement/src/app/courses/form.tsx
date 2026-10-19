@@ -4,7 +4,6 @@ import {
   ActivityIndicator,
   Image,
   Keyboard,
-  KeyboardAvoidingView,
   Modal,
   Platform,
   Pressable,
@@ -31,7 +30,7 @@ import {
 } from "../../utils/validation";
 
 // ==========================================
-// 1. DỮ LIỆU MẶC ĐỊNH
+// 1. GIÁ TRỊ MẶC ĐỊNH CỦA FORM
 // ==========================================
 
 const EMPTY_FORM: CourseFormValues = {
@@ -65,31 +64,29 @@ export default function CourseFormScreen() {
   }>();
 
   const courseId = Array.isArray(id) ? id[0] : id;
-
   const isEditing = Boolean(courseId);
 
-  // STATE DỮ LIỆU FORM
+  // STATE FORM
   const [values, setValues] = useState<CourseFormValues>(EMPTY_FORM);
 
   const [categories, setCategories] = useState<Category[]>([]);
 
   const [createdAt, setCreatedAt] = useState("");
 
-  // STATE LỖI TỪNG TRƯỜNG
+  // STATE VALIDATION
   const [fieldErrors, setFieldErrors] = useState<CourseFieldErrors>({});
 
-  // Lỗi API / lỗi kết nối chung
   const [requestError, setRequestError] = useState("");
 
+  // STATE GIAO DIỆN
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-
   const [imageError, setImageError] = useState(false);
 
   const [categoryModalVisible, setCategoryModalVisible] = useState(false);
 
   // ==========================================
-  // 4. CẬP NHẬT DỮ LIỆU FORM
+  // 4. CẬP NHẬT GIÁ TRỊ FORM
   // ==========================================
 
   const change = (field: keyof CourseFormValues, text: string) => {
@@ -98,7 +95,7 @@ export default function CourseFormScreen() {
       [field]: text,
     }));
 
-    // Xóa lỗi riêng của trường vừa sửa
+    // Xóa lỗi của ô vừa chỉnh sửa
     setFieldErrors((previous) => ({
       ...previous,
       [field]: undefined,
@@ -111,7 +108,10 @@ export default function CourseFormScreen() {
     }
   };
 
-  // Kiểm tra khi người dùng rời khỏi một ô
+  // ==========================================
+  // 5. KIỂM TRA TỪNG TRƯỜNG
+  // ==========================================
+
   const checkField = (field: keyof CourseFormValues) => {
     const nextError = validateCourseFields(values, categories)[field];
 
@@ -122,7 +122,7 @@ export default function CourseFormScreen() {
   };
 
   // ==========================================
-  // 5. LẤY DỮ LIỆU TỪ MOCKAPI
+  // 6. LẤY DỮ LIỆU TỪ MOCKAPI
   // ==========================================
 
   useEffect(() => {
@@ -145,6 +145,7 @@ export default function CourseFormScreen() {
 
         setCategories(categoryData);
 
+        // Nếu sửa, lấy dữ liệu cũ đưa vào Form
         if (course) {
           setValues({
             title: course.title,
@@ -177,7 +178,7 @@ export default function CourseFormScreen() {
   }, [courseId, isEditing]);
 
   // ==========================================
-  // 6. XỬ LÝ DROPDOWN DANH MỤC
+  // 7. XỬ LÝ DANH MỤC
   // ==========================================
 
   const selectedCategory = categories.find(
@@ -195,38 +196,38 @@ export default function CourseFormScreen() {
   };
 
   // ==========================================
-  // 7. VALIDATION VÀ LƯU KHÓA HỌC
+  // 8. VALIDATION VÀ LƯU KHÓA HỌC
   // ==========================================
 
   const save = async () => {
     if (saving) return;
 
-    // Kiểm tra TẤT CẢ các ô
     const errors = validateCourseFields(values, categories);
 
-    // Kiểm tra cả khả năng tải ảnh xem trước
     if (imageError) {
       errors.thumbnail =
         "Không thể tải ảnh từ URL này. Hãy dùng đường dẫn ảnh công khai.";
     }
 
-    // Hiển thị lỗi ngay dưới từng ô
     setFieldErrors(errors);
 
+    // Không lưu khi còn lỗi
     if (Object.keys(errors).length > 0) {
       return;
     }
 
-    // Dữ liệu gửi API
     const payload: CourseInput = {
       title: values.title.trim(),
       description: values.description.trim(),
       categoryId: String(values.categoryId),
       instructor: values.instructor.trim(),
+
       price: Number(values.price),
       duration: Number(values.duration),
+
       thumbnail: values.thumbnail.trim(),
       trailerUrl: values.trailerUrl.trim(),
+
       createdAt: isEditing ? createdAt : new Date().toISOString().slice(0, 10),
     };
 
@@ -235,16 +236,15 @@ export default function CourseFormScreen() {
       setRequestError("");
 
       if (isEditing && courseId) {
-        // PUT
+        // PUT: Sửa khóa học
         await courseService.update(courseId, payload);
       } else {
-        // POST
+        // POST: Thêm khóa học
         await courseService.create(payload);
       }
 
       router.back();
     } catch (err) {
-      // Lỗi kết nối / server không gắn với một ô cụ thể
       setRequestError(
         err instanceof Error ? err.message : "Không thể lưu khóa học.",
       );
@@ -254,7 +254,7 @@ export default function CourseFormScreen() {
   };
 
   // ==========================================
-  // 8. LOADING
+  // 9. LOADING
   // ==========================================
 
   if (loading) {
@@ -268,23 +268,29 @@ export default function CourseFormScreen() {
   }
 
   // ==========================================
-  // 9. GIAO DIỆN FORM
+  // 10. GIAO DIỆN FORM
   // ==========================================
 
   return (
-    <KeyboardAvoidingView
-      style={styles.page}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
-    >
+    // SỬA LỖI IOS:
+    // Không sử dụng KeyboardAvoidingView
+    <View style={styles.page}>
       <Stack.Screen
         options={{
           title: isEditing ? "Sửa khóa học" : "Thêm khóa học",
         }}
       />
 
+      {/* =====================================
+          SCROLLVIEW XỬ LÝ BÀN PHÍM IOS
+         ===================================== */}
+
       <ScrollView
+        style={styles.formScroll}
         contentContainerStyle={styles.content}
         keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
+        automaticallyAdjustKeyboardInsets={Platform.OS === "ios"}
       >
         <Text style={styles.heading}>
           {isEditing ? "Cập nhật khóa học" : "Tạo khóa học mới"}
@@ -307,7 +313,7 @@ export default function CourseFormScreen() {
         <FieldError message={fieldErrors.title} />
 
         {/* ===================================
-            2. MÔ TẢ KHÓA HỌC
+            2. MÔ TẢ
            =================================== */}
 
         <Text style={styles.label}>Mô tả *</Text>
@@ -425,7 +431,6 @@ export default function CourseFormScreen() {
           placeholder="https://.../cover.jpg"
         />
 
-        {/* Lỗi nằm ngay dưới ô URL ảnh */}
         <FieldError message={fieldErrors.thumbnail} />
 
         {/* XEM TRƯỚC ẢNH */}
@@ -439,7 +444,6 @@ export default function CourseFormScreen() {
           />
         )}
 
-        {/* ẢNH KHÔNG TẢI ĐƯỢC */}
         {imageError && !fieldErrors.thumbnail && (
           <FieldError message="Không tải được ảnh xem trước từ URL này." />
         )}
@@ -463,16 +467,13 @@ export default function CourseFormScreen() {
 
         <FieldError message={fieldErrors.trailerUrl} />
 
-        {/* ===================================
-            9. LỖI API / KẾT NỐI
-           =================================== */}
-
+        {/* LỖI KẾT NỐI API */}
         {Boolean(requestError) && (
           <Text style={styles.requestError}>{requestError}</Text>
         )}
 
         {/* ===================================
-            10. NÚT LƯU
+            9. NÚT LƯU
            =================================== */}
 
         <Pressable
@@ -496,7 +497,7 @@ export default function CourseFormScreen() {
       </ScrollView>
 
       {/* =====================================
-          10. MODAL CHỌN DANH MỤC
+          11. MODAL CHỌN DANH MỤC
          ===================================== */}
 
       <Modal
@@ -551,18 +552,23 @@ export default function CourseFormScreen() {
           </View>
         </View>
       </Modal>
-    </KeyboardAvoidingView>
+    </View>
   );
 }
 
 // ==========================================
-// 11. STYLES
+// 12. STYLES
 // ==========================================
 
 const styles = StyleSheet.create({
   page: {
     flex: 1,
     backgroundColor: "#f5f7fb",
+  },
+
+  // ScrollView chiếm toàn bộ không gian còn lại
+  formScroll: {
+    flex: 1,
   },
 
   loadingContainer: {
@@ -605,12 +611,10 @@ const styles = StyleSheet.create({
     color: "#192841",
   },
 
-  // Viền đỏ cho ô có lỗi
   inputInvalid: {
     borderColor: "#c33543",
   },
 
-  // Lỗi ngay dưới ô nhập
   fieldError: {
     color: "#c33543",
     fontSize: 13,
@@ -691,7 +695,6 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 
-  // MODAL DANH MỤC
   modalOverlay: {
     flex: 1,
     justifyContent: "center",
