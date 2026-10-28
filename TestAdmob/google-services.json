@@ -1,0 +1,38 @@
+{
+  "project_info": {
+    "project_number": "394025609994",
+    "project_id": "testadmob-demo-app",
+    "storage_bucket": "testadmob-demo-app.appspot.com"
+  },
+  "admob_config": {
+    "android_app_id": "ca-app-pub-3940256099942544~3347511713",
+    "ios_app_id": "ca-app-pub-3940256099942544~1458002511",
+    "ad_units": {
+      "android": {
+        "banner": "ca-app-pub-3940256099942544/6300978111",
+        "interstitial": "ca-app-pub-3940256099942544/1033173712"
+      },
+      "ios": {
+        "banner": "ca-app-pub-3940256099942544/2934735716",
+        "interstitial": "ca-app-pub-3940256099942544/4411468910"
+      }
+    }
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:394025609994:android:a1b2c3d4e5f60000",
+        "android_client_info": {
+          "package_name": "com.anonymous.TestAdmob"
+        }
+      },
+      "ads_service": {
+        "status": 2,
+        "test_banner_ad_unit_id": "ca-app-pub-3940256099942544/6300978111",
+        "test_interstitial_ad_unit_id": "ca-app-pub-3940256099942544/1033173712"
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
+

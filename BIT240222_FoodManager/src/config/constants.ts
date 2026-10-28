@@ -5,8 +5,6 @@ export const PREFIX = `${STUDENT_ID}_`;
 
 /**
  * Lấy Base URL từ trang Project > API Endpoint trên mockapi.io.
- * Ví dụ: https://xxxxxxxx.mockapi.io/api/v1
- * KHÔNG thêm tên resource ở cuối.
  */
 export const MOCK_API_BASE_URL =
   "https://6ad71664f71f154ac487bc24.mockapi.io/api/v1";
