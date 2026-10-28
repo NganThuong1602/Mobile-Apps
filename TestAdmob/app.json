@@ -35,7 +35,7 @@
         }
       ],
       [
-        "react-native-google-mobile-ads",
+        "./node_modules/react-native-google-mobile-ads/app.plugin.js",
         {
           "androidAppId": "ca-app-pub-3940256099942544~3347511713",
           "iosAppId": "ca-app-pub-3940256099942544~1458002511"
@@ -46,9 +46,5 @@
       "typedRoutes": true,
       "reactCompiler": true
     }
-  },
-  "react-native-google-mobile-ads": {
-    "android_app_id": "ca-app-pub-3940256099942544~3347511713",
-    "ios_app_id": "ca-app-pub-3940256099942544~1458002511"
   }
 }
